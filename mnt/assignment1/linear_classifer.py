@@ -109,7 +109,7 @@ def l2_regularization(W, reg_strength):
     grad = 2 * reg_strength * W                         # dL2(W)/dW = 2 * λ * W
 
     return loss, grad   # L2(W), dL2(W)/dW
-    
+
 
 # target_index - y
 def linear_softmax(X, W, target_index):
@@ -141,7 +141,7 @@ class LinearSoftmaxClassifier:
     def fit(self, X, y, batch_size=100, learning_rate=1e-7, reg=1e-5, epochs=1):
         '''
         Trains linear classifier
-        
+
         Arguments:
           X, np array (num_samples, num_features) - training data
           y, np array of int (num_samples) - labels
@@ -175,8 +175,6 @@ class LinearSoftmaxClassifier:
                 loss = fn_loss + reg_loss
                 dW = fn_dW + reg_dW
 
-                print('fn_loss: %s, reg_loss: %s' % (fn_loss, reg_loss))
-
                 self.W = self.W - learning_rate * dW
 
             loss_history.append(loss)
@@ -186,7 +184,7 @@ class LinearSoftmaxClassifier:
     def predict(self, X):
         '''
         Produces classifier predictions on the set
-       
+
         Arguments:
           X, np array (test_samples, num_features)
 
