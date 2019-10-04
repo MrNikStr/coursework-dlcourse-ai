@@ -1,5 +1,8 @@
+import numpy as np
+
+
 def multiclass_accuracy(prediction, ground_truth):
-    """
+    '''
     Computes metrics for multiclass classification
 
     Arguments:
@@ -8,9 +11,12 @@ def multiclass_accuracy(prediction, ground_truth):
 
     Returns:
     accuracy - ratio of accurate predictions to total samples
-    """
+    '''
 
-    # TODO: Implement computing accuracy
-    raise Exception("Not implemented!")
+    assert prediction.shape == ground_truth.shape
+    assert prediction.ndim == 1
 
-    return 0
+    correct = np.sum(prediction == ground_truth)
+    total = prediction.shape[0]
+
+    return correct / float(total)
