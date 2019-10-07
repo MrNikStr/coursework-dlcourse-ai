@@ -27,7 +27,8 @@ class Trainer:
                  num_epochs=20,
                  batch_size=20,
                  learning_rate=1e-2,
-                 learning_rate_decay=1.0):
+                 learning_rate_decay=1.0,
+                 verbose=False):
         """
         Initializes the trainer
 
@@ -38,8 +39,8 @@ class Trainer:
         num_epochs, int - number of epochs to train
         batch_size, int - batch size
         learning_rate, float - initial learning rate
-        learning_rate_decal, float - ratio for decaying learning rate
-           every epoch
+        learning_rate_decal, float - ratio for decaying learning rate every epoch
+        verbose, boolean - whether to log training process
         """
         self.dataset = dataset
         self.model = model
@@ -48,6 +49,7 @@ class Trainer:
         self.learning_rate = learning_rate
         self.num_epochs = num_epochs
         self.learning_rate_decay = learning_rate_decay
+        self.verbose = verbose
 
         self.optimizers = None
 
@@ -113,7 +115,8 @@ class Trainer:
             train_accuracy = self.compute_accuracy(self.dataset.train_X, self.dataset.train_y)
             val_accuracy = self.compute_accuracy(self.dataset.val_X, self.dataset.val_y)
 
-            print("Loss: %f, Train accuracy: %f, val accuracy: %f" % (batch_losses[-1], train_accuracy, val_accuracy))
+            if self.verbose:
+                print("Loss: %f, Train accuracy: %f, val accuracy: %f" % (batch_losses[-1], train_accuracy, val_accuracy))
 
             loss_history.append(ave_loss)
             train_acc_history.append(train_accuracy)
