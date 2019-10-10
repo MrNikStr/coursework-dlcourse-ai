@@ -290,28 +290,65 @@ class ConvolutionalLayer:
 
 class MaxPoolingLayer:
     def __init__(self, pool_size, stride):
-        '''
+        """
         Initializes the max pool
 
         Arguments:
-        pool_size, int - area to pool
-        stride, int - step size between pooling windows
-        '''
+          :param pool_size, int - area to pool
+          :param stride, int - step size between pooling windows
+        """
         self.pool_size = pool_size
         self.stride = stride
         self.X = None
 
     def forward(self, X):
-        batch_size, height, width, channels = X.shape
-        # TODO: Implement maxpool forward pass
-        # Hint: Similarly to Conv layer, loop on
-        # output x/y dimension
-        raise Exception("Not implemented!")
+        self.X = X
+        batch_size, in_height, in_width, channels = X.shape
 
+        out_height = int((in_height - self.pool_size) / self.stride) + 1
+        out_width = int((in_width - self.pool_size) / self.stride) + 1
+
+        M = np.zeros((batch_size, out_height, out_width, channels))
+
+        for y in range(out_height):
+            for x in range(out_width):
+
+                pool_y_from = y * self.stride
+                pool_y_to = pool_y_from + self.pool_size
+                pool_x_from = x * self.stride
+                pool_x_to = pool_x_from + self.pool_size
+
+                M[:, y, x, :] = np.amax(X[:, pool_y_from:pool_y_to, pool_x_from:pool_x_to, :], axis=(1, 2))
+
+        return M
+
+    # d_out - dL/dM
     def backward(self, d_out):
-        # TODO: Implement maxpool backward pass
-        batch_size, height, width, channels = self.X.shape
-        raise Exception("Not implemented!")
+        batch_size, in_height, in_width, channels = self.X.shape
+
+        out_height = int((in_height - self.pool_size) / self.stride) + 1
+        out_width = int((in_width - self.pool_size) / self.stride) + 1
+
+        d_result = np.zeros_like(self.X)
+
+        for y in range(out_height):
+            for x in range(out_width):
+
+                pool_y_from = y * self.stride
+                pool_y_to = pool_y_from + self.pool_size
+                pool_x_from = x * self.stride
+                pool_x_to = pool_x_from + self.pool_size
+
+                # TODO: vectorize
+                for b in range(batch_size):
+                    for c in range(channels):
+                        d_out_pooled = d_out[b, y, x, c]
+                        X_pooled = self.X[b, pool_y_from:pool_y_to, pool_x_from:pool_x_to, c]
+
+                        max_ind_y, max_ind_x = np.unravel_index(np.argmax(X_pooled), X_pooled.shape)
+                        d_result[b, pool_y_from + max_ind_y, pool_x_from + max_ind_x, c] += d_out_pooled
+
+        return d_result
 
     def params(self):
         return {}
